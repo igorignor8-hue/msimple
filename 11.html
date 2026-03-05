@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Makssimple — Голова в Президенти</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, sans-serif;
+}
+
+body{
+background:#0f172a;
+color:white;
+overflow-x:hidden;
+}
+
+header{
+height:100vh;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+text-align:center;
+background:linear-gradient(120deg,#1e3a8a,#0ea5e9);
+}
+
+.logo{
+width:360px;
+height:360px;
+border-radius:50%;
+border:6px solid white;
+object-fit:cover;
+box-shadow:0 20px 40px rgba(0,0,0,0.4);
+animation:float 4s ease-in-out infinite;
+}
+
+@keyframes float{
+0%{transform:translateY(0)}
+50%{transform:translateY(-15px)}
+100%{transform:translateY(0)}
+}
+
+h1{
+font-size:60px;
+margin-top:25px;
+}
+
+h2{
+margin-top:10px;
+opacity:0.9;
+}
+
+.buttons{
+margin-top:35px;
+display:flex;
+gap:20px;
+}
+
+.btn{
+padding:15px 35px;
+border-radius:30px;
+font-size:18px;
+cursor:pointer;
+text-decoration:none;
+transition:0.3s;
+}
+
+.telegram{
+background:#229ED9;
+color:white;
+}
+
+.telegram:hover{
+transform:scale(1.1);
+}
+
+.program{
+background:white;
+color:#0f172a;
+}
+
+.program:hover{
+transform:scale(1.1);
+}
+
+section{
+padding:80px 10%;
+text-align:center;
+}
+
+.about{
+max-width:900px;
+margin:auto;
+line-height:1.6;
+font-size:20px;
+}
+
+.gallery{
+margin-top:50px;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:30px;
+}
+
+.gallery img{
+width:100%;
+border-radius:15px;
+transition:0.4s;
+box-shadow:0 10px 30px rgba(0,0,0,0.4);
+}
+
+.gallery img:hover{
+transform:scale(1.07);
+}
+
+#game{
+margin-top:40px;
+border-radius:15px;
+box-shadow:0 10px 40px rgba(0,0,0,0.6);
+}
+
+footer{
+text-align:center;
+padding:30px;
+background:#020617;
+margin-top:40px;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+<img src="img/logo.jpg" class="logo">
+
+<h1>Makssimple</h1>
+<h2>Голова в Президенти</h2>
+
+<div class="buttons">
+
+<a href="https://t.me/yourtelegram" class="btn telegram">
+Написати в Telegram
+</a>
+
+<a href="#about" class="btn program">
+Програма
+</a>
+
+</div>
+
+</header>
+
+
+<section id="about">
+
+<div class="about">
+
+<h2>Про кандидата</h2>
+
+<p>
+Makssimple — нове покоління лідерів.  
+Сучасні ідеї, розвиток технологій, підтримка людей та нова економіка.
+Мета — сильна сучасна країна та розвиток майбутнього.
+</p>
+
+</div>
+
+</section>
+
+
+<section>
+
+<h2>Галерея</h2>
+
+<div class="gallery">
+
+<img src="img/1.jpg">
+<img src="img/2.jpg">
+<img src="img/3.jpg">
+<img src="img/4.jpg">
+<img src="img/5.jpg">
+
+</div>
+
+</section>
+
+
+<section>
+
+<h2>Міні-гра</h2>
+<p>Натисни ПРОБІЛ або КЛІК щоб стрибати</p>
+
+<canvas id="game" width="900" height="350"></canvas>
+
+</section>
+
+
+<footer>
+© 2026 Makssimple Campaign
+</footer>
+
+
+
+<script>
+
+const canvas = document.getElementById("game")
+const ctx = canvas.getContext("2d")
+
+let ballY = 260
+let velocity = 0
+let jumping = false
+
+let obstacles = []
+let frame = 0
+
+const gravity = 0.6
+
+const bg1 = new Image()
+const bg2 = new Image()
+
+bg1.src = "img/1.jpg"
+bg2.src = "img/2.jpg"
+
+function jump(){
+
+if(!jumping){
+velocity = -12
+jumping = true
+}
+
+}
+
+document.addEventListener("keydown",e=>{
+if(e.code==="Space") jump()
+})
+
+canvas.addEventListener("click",jump)
+
+function spawnObstacle(){
+
+let type = Math.random()
+
+if(type < 0.5){
+
+obstacles.push({
+x:900,
+w:40,
+h:60,
+type:"fence"
+})
+
+}else{
+
+obstacles.push({
+x:900,
+w:80,
+h:20,
+type:"river"
+})
+
+}
+
+}
+
+function update(){
+
+frame++
+
+velocity += gravity
+ballY += velocity
+
+if(ballY > 260){
+ballY = 260
+velocity = 0
+jumping = false
+}
+
+if(frame % 120 === 0){
+spawnObstacle()
+}
+
+obstacles.forEach(o=>{
+o.x -= 6
+})
+
+obstacles = obstacles.filter(o => o.x > -100)
+
+}
+
+function draw(){
+
+let bg = frame % 400 < 200 ? bg1 : bg2
+
+ctx.drawImage(bg,0,0,canvas.width,canvas.height)
+
+ctx.beginPath()
+ctx.arc(120,ballY,20,0,Math.PI*2)
+ctx.fillStyle="red"
+ctx.fill()
+
+obstacles.forEach(o=>{
+
+if(o.type==="fence"){
+
+ctx.fillStyle="#654321"
+ctx.fillRect(o.x,280-o.h,o.w,o.h)
+
+}else{
+
+ctx.fillStyle="#1e90ff"
+ctx.fillRect(o.x,280,o.w,o.h)
+
+}
+
+})
+
+}
+
+function loop(){
+
+update()
+draw()
+
+requestAnimationFrame(loop)
+
+}
+
+loop()
+
+</script>
+
+
+</body>
+</html>
